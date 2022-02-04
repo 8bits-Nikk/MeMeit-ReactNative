@@ -4,6 +4,8 @@ import {Text, TextInput} from "react-native-paper";
 import MyButton from "../component/MyButton";
 import {ThemeContext} from "../context/ThemeContext";
 import {AuthContext} from "../context/AuthService";
+import firestore from "@react-native-firebase/firestore";
+import auth from "@react-native-firebase/auth";
 
 const Register = ({navigation}) => {
 
@@ -21,13 +23,26 @@ const Register = ({navigation}) => {
     }
 
     const {register} = useContext(AuthContext)
+    const usersCollection = firestore().collection('Users');
 
     const registerUser = () => {
-        if(validateFields()){
-            register(email.trim(), password.trim())
-        }else {
+        if (validateFields()) {
+            addUser().then((res) => {
+                if (res) {
+                    usersCollection.doc(auth().currentUser.uid).set({
+                        Name: name,
+                        Email: email
+                    }).then(() => console.log("Added"))
+                }
+            })
+        } else {
             Alert.alert("Error", "Please Enter Valid Details")
         }
+    }
+
+    const addUser = async () => {
+        await register(email.trim(), password.trim())
+        return true
     }
 
     const validateFields = () => {
@@ -35,7 +50,7 @@ const Register = ({navigation}) => {
         return !(!emailRegx.test(email) || email === '' || password === '' || password.length < 8 || password !== confPassword || name === '');
     }
 
-    return(
+    return (
         <View style={styles.body}>
             <View style={styles.header}>
                 <Text style={styles.title}>Register</Text>
@@ -92,7 +107,7 @@ const Register = ({navigation}) => {
             </View>
 
             <View style={styles.bottom}>
-                <TouchableWithoutFeedback onPress={()=> navigation.goBack()}>
+                <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
                     <Text style={styles.label}>Login</Text>
                 </TouchableWithoutFeedback>
             </View>

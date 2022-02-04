@@ -15,7 +15,7 @@ const Profile = () => {
     return(
         <View>
             <Text>Profile</Text>
-            <Text>{user.email}</Text>
+            <Text>{user.uid}</Text>
             <View style={{marginTop: 8}}>
                 <MyButton theme={theme} text={"Logout"} onPress={()=> {logout()}}/>
             </View>
