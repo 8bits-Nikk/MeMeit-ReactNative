@@ -3,6 +3,7 @@ import {Alert, StyleSheet, TouchableWithoutFeedback, View} from "react-native";
 import {Text, TextInput} from "react-native-paper";
 import MyButton from "../component/MyButton";
 import {ThemeContext} from "../context/ThemeContext";
+import {AuthContext} from "../context/AuthService";
 
 const Register = ({navigation}) => {
 
@@ -19,11 +20,13 @@ const Register = ({navigation}) => {
         setIsVisible(prevState => !prevState)
     }
 
+    const {register} = useContext(AuthContext)
+
     const registerUser = () => {
         if(validateFields()){
-            console.log("Register")
+            register(email.trim(), password.trim())
         }else {
-            Alert.alert("Error", "Please Enter all Details")
+            Alert.alert("Error", "Please Enter Valid Details")
         }
     }
 

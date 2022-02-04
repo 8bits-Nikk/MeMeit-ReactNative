@@ -1,13 +1,13 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useReducer, useState} from 'react';
 import {
     DarkTheme as NavigationDarkTheme,
     DefaultTheme as NavigationDefaultTheme,
+    NavigationContainer,
 } from "@react-navigation/native";
-import { NavigationContainer } from '@react-navigation/native';
 import {
-    Provider as PaperProvider,
     DarkTheme as PaperDarkTheme,
     DefaultTheme as PaperDefaultTheme,
+    Provider as PaperProvider,
 } from 'react-native-paper';
 import merge from 'deepmerge';
 import {useColorScheme} from "react-native";
@@ -17,12 +17,12 @@ import Favorites from "./src/ContentScreens/Favorites";
 import Profile from "./src/ContentScreens/Profile";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {ThemeContext} from "./src/context/ThemeContext";
-import SplashScreen from "./src/SplashScreen/SplashScreen";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import auth from '@react-native-firebase/auth';
 import Login from "./src/AuthScreens/Login";
 import Register from "./src/AuthScreens/Register";
-import {AuthContext, AuthProvider} from "./src/context/AuthContext";
+import {AuthContext, AuthProvider} from "./src/context/AuthService";
+import {UserContext} from "./src/context/UserContext";
 
 const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme)
 const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme)
@@ -71,30 +71,51 @@ const AuthNavigator = () => (
 
 const App = () => {
     const isDarkMode = useColorScheme() === 'dark'
-    const [isLoading, setIsLoading] = useState(true)
 
     let theme = isDarkMode ? CombinedDarkTheme : CombinedDefaultTheme
 
     const [initializing, setInitializing] = useState(true)
-    const {user, setUser} = useContext(AuthContext)
 
-    useEffect(()=> {
-        // auth().onAuthStateChanged(onAuthObserver)
-        setTimeout(()=>{setIsLoading(false)},
-            1500)
-    })
+    const initialState = null
+    const reducer = (state, action) => {
+        switch (action.type){
+            case 'setUser':
+                return action.value
+            case 'resetUser':
+                return null
+            default :
+                return state
+        }
+    }
+
+    const [user, userDispatch] = useReducer(reducer, initialState)
+
+    const onAuthObserver = (user_) => {
+        userDispatch({type: 'setUser', value: user_})
+        if (initializing) setInitializing(false)
+    }
+
+    useEffect(() => {
+        return auth().onAuthStateChanged(onAuthObserver)
+    }, [])
+
+    if (initializing) return null
+
     return (
         <PaperProvider theme={theme}>
-           <AuthProvider>
-               <NavigationContainer theme={theme}>
-                   <ThemeContext.Provider value={{ isDarkMode: isDarkMode , theme: theme}}>
-                       {
-                           isLoading ? <SplashScreen/> : <AuthNavigator />
-                       }
-                   </ThemeContext.Provider>
-               </NavigationContainer>
-           </AuthProvider>
+            <AuthProvider>
+                <NavigationContainer theme={theme}>
+                    <UserContext.Provider value={{user, userDispatch}}>
+                        <ThemeContext.Provider value={{isDarkMode: isDarkMode, theme: theme}}>
+                            {
+                                user ? <TabNavigator theme={theme}/> : <AuthNavigator/>
+                            }
+                        </ThemeContext.Provider>
+                    </UserContext.Provider>
+                </NavigationContainer>
+            </AuthProvider>
         </PaperProvider>
+
     )
 }
 

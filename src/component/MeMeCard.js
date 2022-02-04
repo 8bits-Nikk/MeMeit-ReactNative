@@ -1,5 +1,5 @@
 import React from "react";
-import {View, StyleSheet, Image, TouchableOpacity, ImageBackground, Share} from "react-native";
+import {View, StyleSheet, Image, TouchableOpacity, ImageBackground} from "react-native";
 import {Text} from "react-native-paper";
 import Ionicons from "react-native-vector-icons/Ionicons";
 

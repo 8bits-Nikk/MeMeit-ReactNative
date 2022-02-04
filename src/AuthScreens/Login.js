@@ -1,8 +1,9 @@
 import React, {useContext, useState} from "react";
-import {View, StyleSheet, TouchableWithoutFeedback} from "react-native";
+import {View, StyleSheet, TouchableWithoutFeedback, Alert} from "react-native";
 import {Text, TextInput} from "react-native-paper";
 import {ThemeContext} from "../context/ThemeContext";
 import MyButton from "../component/MyButton";
+import {AuthContext} from "../context/AuthService";
 
 
 const Login = ({navigation}) => {
@@ -13,9 +14,24 @@ const Login = ({navigation}) => {
     const [isVisible, setIsVisible] = useState(false)
 
     const themeValue = useContext(ThemeContext)
+    const {login} = useContext(AuthContext)
 
     const handlePress = () => {
         setIsVisible(prevState => !prevState)
+    }
+
+    const validateFields = () => {
+        const emailRegx = new RegExp('(?:[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\\])')
+        return !(!emailRegx.test(email) || email === '' || password === '' || password.length < 8);
+    }
+
+
+    const loginUser = () => {
+        if(validateFields()){
+            login(email.trim(), password.trim())
+        }else {
+            Alert.alert("Error", "Please Enter Valid Details")
+        }
     }
 
     return (
@@ -47,7 +63,7 @@ const Login = ({navigation}) => {
                                            onPress={handlePress}/>}
                        theme={themeValue.theme}/>
             <View style={{marginTop: 8}}>
-                <MyButton theme={themeValue.theme} text={"Login"} onPress={()=>{console.log("Login")}}/>
+                <MyButton theme={themeValue.theme} text={"Login"} onPress={loginUser}/>
             </View>
             <View style={styles.bottom}>
                 <TouchableWithoutFeedback onPress={()=> navigation.navigate("Register")}>
