@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useReducer, useState} from 'react';
+import React, {useEffect, useReducer, useState} from 'react';
 import {
     DarkTheme as NavigationDarkTheme,
     DefaultTheme as NavigationDefaultTheme,
@@ -21,7 +21,7 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import auth from '@react-native-firebase/auth';
 import Login from "./src/AuthScreens/Login";
 import Register from "./src/AuthScreens/Register";
-import {AuthContext, AuthProvider} from "./src/context/AuthService";
+import {AuthProvider} from "./src/context/AuthService";
 import {UserContext} from "./src/context/UserContext";
 
 const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme)

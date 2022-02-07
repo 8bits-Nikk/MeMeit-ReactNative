@@ -2,26 +2,22 @@ import React from "react";
 import {View, StyleSheet, Image, TouchableOpacity, ImageBackground} from "react-native";
 import {Text} from "react-native-paper";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import addToFavorite from "../context/FavoriteService";
+import auth from "@react-native-firebase/auth";
 
 const MeMeCard = ({meme, themeValue}) => {
 
-    // const sharePost = () => {
-    //     let imagePath = ''
-    //     RNFetchBlob.config({
-    //         fileCache: true,
-    //     }).fetch('GET', meme.url)
-    //         .then((resp) => {
-    //             imagePath = resp.path()
-    //             return resp.readFile('base64')
-    //         })
-    //         .then( async base64Data => {
-    //             let base64_Data = `data:image/png;base64,` + base64Data;
-    //             // here's base64 encoded image
-    //             await Share.open({ url: base64_Data });
-    //             // remove the file from storage
-    //             return fs.unlink(imagePath);
-    //         })
-    // }
+    const handleSave = () => {
+        let post  = {
+            author: meme.author,
+            postLink: meme.postLink,
+            subreddit: meme.subreddit,
+            url: meme.url,
+            title: meme.title,
+            ups: meme.ups
+        }
+        addToFavorite(auth().currentUser.uid, post)
+    }
     return (
         <View style={styles.cardBody}>
             <View style={[styles.cardHeader, {backgroundColor: themeValue.isDarkMode ? "#222" : '#fff'}]}>
@@ -45,7 +41,7 @@ const MeMeCard = ({meme, themeValue}) => {
                     <Ionicons name={"share-social"} size={30}
                               color={themeValue.isDarkMode ? "#fff" : themeValue.theme.colors.enabled}/>
                 </TouchableOpacity>
-                <TouchableOpacity style={{margin: 8}}>
+                <TouchableOpacity style={{margin: 8}} onPress={handleSave}>
                     <Ionicons name={"heart"} size={30}
                               color={themeValue.isDarkMode ? "#fff" : themeValue.theme.colors.enabled}/>
                 </TouchableOpacity>
