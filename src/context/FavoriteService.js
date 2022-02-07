@@ -1,7 +1,7 @@
 import React from "react";
 import firestore from "@react-native-firebase/firestore";
 
-const addToFavorite = (uid, post) =>{
+export const addToFavorite = (uid, post) =>{
     let docId = post.postLink.substring(16)
     const favoriteCollection = firestore().collection("Users").doc(uid).collection("Favorites")
     favoriteCollection.doc(docId).set(post).then(()=> {
@@ -9,4 +9,9 @@ const addToFavorite = (uid, post) =>{
     })
 }
 
-export default addToFavorite
+export const removeFavorite = (uid, post) => {
+    let docId = post.postLink.substring(16)
+    const favoriteCollection = firestore().collection("Users").doc(uid).collection("Favorites")
+    favoriteCollection.doc(docId).delete().then(()=> console.log("deleted"))
+}
+

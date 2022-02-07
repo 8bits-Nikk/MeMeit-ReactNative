@@ -2,21 +2,27 @@ import React from "react";
 import {View, StyleSheet, Image, TouchableOpacity, ImageBackground} from "react-native";
 import {Text} from "react-native-paper";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import addToFavorite from "../context/FavoriteService";
 import auth from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
+import {addToFavorite, removeFavorite} from "../context/FavoriteService";
 
-const MeMeCard = ({meme, themeValue}) => {
+const MeMeCard = ({meme, themeValue, favPage}) => {
 
     const handleSave = () => {
-        let post  = {
-            author: meme.author,
-            postLink: meme.postLink,
-            subreddit: meme.subreddit,
-            url: meme.url,
-            title: meme.title,
-            ups: meme.ups
-        }
-        addToFavorite(auth().currentUser.uid, post)
+       if(favPage){
+           removeFavorite(auth().currentUser.uid, meme)
+       }else {
+           let post  = {
+               author: meme.author,
+               postLink: meme.postLink,
+               subreddit: meme.subreddit,
+               url: meme.url,
+               title: meme.title,
+               ups: meme.ups,
+               timeStamp: firestore.FieldValue.serverTimestamp()
+           }
+           addToFavorite(auth().currentUser.uid, post)
+       }
     }
     return (
         <View style={styles.cardBody}>
@@ -43,7 +49,7 @@ const MeMeCard = ({meme, themeValue}) => {
                 </TouchableOpacity>
                 <TouchableOpacity style={{margin: 8}} onPress={handleSave}>
                     <Ionicons name={"heart"} size={30}
-                              color={themeValue.isDarkMode ? "#fff" : themeValue.theme.colors.enabled}/>
+                              color={favPage ? "#f54287" : themeValue.theme.colors.enabled}/>
                 </TouchableOpacity>
             </View>
         </View>

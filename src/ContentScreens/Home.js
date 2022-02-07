@@ -39,7 +39,7 @@ const Home = () => {
         })
     }
 
-    const _renderItem = ({item}) => <MeMeCard meme={item} themeValue={themeValue}/>
+    const _renderItem = ({item}) => <MeMeCard meme={item} themeValue={themeValue} favPage={false}/>
     return (
         <View>
             <FlatList data={meme}
