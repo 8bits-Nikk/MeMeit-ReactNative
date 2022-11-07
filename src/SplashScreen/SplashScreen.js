@@ -1,18 +1,11 @@
-import React, {useContext} from "react";
+import React from "react";
 import {View, StyleSheet, Image} from "react-native";
 import {ActivityIndicator, Text} from "react-native-paper";
-import {Colors} from "react-native/Libraries/NewAppScreen";
-import {ThemeContext} from "../context/ThemeContext";
-
 
 const SplashScreen = () => {
-    const themeValue = useContext(ThemeContext)
 
-    const backgroundStyle = {
-        backgroundColor: themeValue.isDarkMode ? Colors.darker : Colors.lighter,
-    };
     return(
-        <View style={[styles.body,backgroundStyle]}>
+        <View style={styles.body}>
             <Image source={require("../assets/logo.png")} style={styles.logo}/>
             <Text style={styles.title}>MeMeit</Text>
             <ActivityIndicator style={{marginTop: 20 }}/>

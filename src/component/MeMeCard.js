@@ -1,28 +1,34 @@
-import React from "react";
-import {View, StyleSheet, Image, TouchableOpacity, ImageBackground} from "react-native";
+import React, {useContext, useRef} from "react";
+import {View, StyleSheet, Image, TouchableOpacity, ImageBackground, Dimensions} from "react-native";
 import {Text} from "react-native-paper";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import {addToFavorite, removeFavorite} from "../context/FavoriteService";
+import ImageZoom from 'react-native-image-pan-zoom';
+import {ThemeContext} from "../context/ThemeContext";
 
-const MeMeCard = ({meme, themeValue, favPage}) => {
+
+const MeMeCard = ({meme, favPage}) => {
+
+    const ImgRef = useRef()
+    const themeValue = useContext(ThemeContext)
 
     const handleSave = () => {
-       if(favPage){
-           removeFavorite(auth().currentUser.uid, meme)
-       }else {
-           let post  = {
-               author: meme.author,
-               postLink: meme.postLink,
-               subreddit: meme.subreddit,
-               url: meme.url,
-               title: meme.title,
-               ups: meme.ups,
-               timeStamp: firestore.FieldValue.serverTimestamp()
-           }
-           addToFavorite(auth().currentUser.uid, post)
-       }
+        if (favPage) {
+            removeFavorite(auth().currentUser.uid, meme)
+        } else {
+            let post = {
+                author: meme.author,
+                postLink: meme.postLink,
+                subreddit: meme.subreddit,
+                url: meme.url,
+                title: meme.title,
+                ups: meme.ups,
+                timeStamp: firestore.FieldValue.serverTimestamp()
+            }
+            addToFavorite(auth().currentUser.uid, post)
+        }
     }
     return (
         <View style={styles.cardBody}>
@@ -38,18 +44,28 @@ const MeMeCard = ({meme, themeValue, favPage}) => {
             </View>
             <View style={{backgroundColor: themeValue.isDarkMode ? "#000" : '#eee'}}>
                 <ImageBackground source={require("../assets/imagePlaceHolder.png")}>
-                    <Image style={styles.cardImg}
-                           source={{uri: meme.url}}/>
+                    <ImageZoom cropWidth={Dimensions.get('window').width}
+                               cropHeight={300}
+                               imageHeight={300}
+                               imageWidth={Dimensions.get('window').width}
+                               ref={ImgRef}
+                               responderRelease={() => {
+                                   ImgRef.current.reset()
+                               }}
+                               >
+                        <Image style={styles.cardImg}
+                               source={{uri: meme.url}}/>
+                    </ImageZoom>
                 </ImageBackground>
             </View>
             <View style={[styles.cardFooter, {backgroundColor: themeValue.isDarkMode ? "#222" : '#fff'}]}>
-                <TouchableOpacity style={{margin: 8}} onPress={()=>{}}>
+                <TouchableOpacity style={{margin: 8}} onPress={() => {}}>
                     <Ionicons name={"share-social"} size={30}
                               color={themeValue.isDarkMode ? "#fff" : themeValue.theme.colors.enabled}/>
                 </TouchableOpacity>
                 <TouchableOpacity style={{margin: 8}} onPress={handleSave}>
                     <Ionicons name={"heart"} size={30}
-                              color={favPage ? "#f54287" : themeValue.theme.colors.enabled}/>
+                              color={favPage ? "#f54287" : themeValue.isDarkMode ? "#fff" : themeValue.theme.colors.enabled}/>
                 </TouchableOpacity>
             </View>
         </View>

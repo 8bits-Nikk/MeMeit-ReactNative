@@ -69,7 +69,7 @@ const Login = ({navigation}) => {
                 <TouchableWithoutFeedback onPress={()=> navigation.navigate("Register")}>
                     <Text style={styles.label}>Create New User</Text>
                 </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={() => navigation.navigate("ForgotPass")}>
                     <Text style={styles.label}>Forgot PassWord ?</Text>
                 </TouchableWithoutFeedback>
             </View>

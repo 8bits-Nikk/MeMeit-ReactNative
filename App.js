@@ -23,6 +23,8 @@ import Login from "./src/AuthScreens/Login";
 import Register from "./src/AuthScreens/Register";
 import {AuthProvider} from "./src/context/AuthService";
 import {UserContext} from "./src/context/UserContext";
+import SplashScreen from "./src/SplashScreen/SplashScreen";
+import ForgetPass from "./src/AuthScreens/ForgetPass";
 
 const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme)
 const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme)
@@ -66,6 +68,8 @@ const AuthNavigator = () => (
                       component={Login}/>
         <Stack.Screen name={"Register"}
                       component={Register}/>
+        <Stack.Screen name={"ForgotPass"}
+                      component={ForgetPass}/>
     </Stack.Navigator>
 )
 
@@ -78,7 +82,7 @@ const App = () => {
 
     const initialState = null
     const reducer = (state, action) => {
-        switch (action.type){
+        switch (action.type) {
             case 'setUser':
                 return action.value
             case 'resetUser':
@@ -92,14 +96,16 @@ const App = () => {
 
     const onAuthObserver = (user_) => {
         userDispatch({type: 'setUser', value: user_})
-        if (initializing) setInitializing(false)
+        setTimeout(() => {
+            if (initializing) setInitializing(false)
+        }, 1500)
     }
 
     useEffect(() => {
         return auth().onAuthStateChanged(onAuthObserver)
     }, [])
 
-    if (initializing) return null
+    if (initializing) return <SplashScreen/>
 
     return (
         <PaperProvider theme={theme}>
